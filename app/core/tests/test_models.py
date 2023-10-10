@@ -17,7 +17,6 @@ class ModelTests(TestCase):
         recipe = models.Recipe.objects.create(
             name="Test recipe name",
             description="A test recipe",
-            ingredients=[{"name": "dough"}, {"name": "cheese"}, {"name": "tomato"}]
         )   
 
         self.assertEqual(str(recipe), recipe.name)
