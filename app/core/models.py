@@ -9,7 +9,6 @@ class Recipe(models.Model):
     """recipe object"""
     name=models.CharField(max_length=255)
     description=models.TextField(blank=True)
-    testfield=models.CharField(max_length=255, default="foo")
 
 
     def __str__(self):
