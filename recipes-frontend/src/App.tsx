@@ -1,30 +1,14 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import RecipeTable from "./components/recipeTable"
+
 
 function App() {
-
-  const getRecipes = async () => {
-    const recipes  = await fetch("http://localhost:8000/api/recipe/recipes/")
-    console.log({recipes});
-  }
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={getRecipes}>
-          Get Recipes
-        </button>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App" style={{maxWidth:"75%", margin: "0 auto", marginTop: "10%"}}>
+      <RecipeTable/>
+
     </div>
   );
 }

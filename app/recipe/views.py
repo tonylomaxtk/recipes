@@ -16,9 +16,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Return queryset results"""   
 
         name_param = self.request.query_params.get('name')
+
+        print("name_param",name_param)
         if name_param is not None:
             filtered_results = self.queryset.filter(name__contains=name_param)
             return filtered_results
         
         else:
-            return self.queryset
+            return  Recipe.objects.all()
