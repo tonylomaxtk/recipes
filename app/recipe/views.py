@@ -12,16 +12,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecipeSerializer
     queryset = Recipe.objects.all()
 
-    def get_serializer_class(self):
-        """Return the serializer class for request"""
+    def get_queryset(self):
+        """Return queryset results"""   
 
-        if self.action == "list":
-            return serializers.RecipeSerializer
+        name_param = self.request.query_params.get('name')
+
+        if name_param is not None:
+            filtered_results = self.queryset.filter(name__contains=name_param)
+            return filtered_results
         
-        return self.serializer_class
-
-
-# class IngredientViewSet(RecipeViewSet):
-#     """Manage ingredients in the db"""
-#     serializer_class = serializers.IngredientSerializer
-#     queryset = Ingredient.objects.all()    
+        else:
+            return self.queryset

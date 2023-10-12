@@ -17,6 +17,8 @@ from recipe.serializers import (
 
 
 
+
+
 RECIPES_URL = reverse('recipe:recipe-list')
 
 
@@ -39,6 +41,11 @@ def detail_url(recipe_id):
     """Create and return a recipe detail URL"""
 
     return reverse("recipe:recipe-detail", args=[recipe_id])
+
+def search_url(query_param):
+    """Create and return a recipe detail URL"""
+
+    return reverse("recipe:recipe-detail", args=[query_param])
 
 class RecipeAPITests(TestCase):
     """Test api requests"""
@@ -172,3 +179,16 @@ class RecipeAPITests(TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(recipe.ingredients.count(), 0)
+
+
+    def test_get_filtered_recipe(self):
+        """Test get recipe based on query param"""
+
+        recipe = create_recipe(name='pizza')
+        recipe = create_recipe(name='burger')
+
+        res = self.client.get(RECIPES_URL, {'name': 'pi'})
+
+        recipe_from_db = Recipe.objects.get(name = "pizza")
+        
+        self.assertEqual(res.data[0]["name"], recipe_from_db.name)    
