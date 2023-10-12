@@ -3,7 +3,7 @@ version: "3.9"
 services: 
   app:
     build:
-      context: .
+      context: ./app
       args:
         - DEV=true
     ports:
@@ -32,6 +32,12 @@ services:
       - POSTGRES_PASSWORD=changeme
     ports:
       - "5432:5432"  
+
+  frontend:
+    build: ./recipes-frontend
+    container_name: recipes-frontend
+    ports:
+      - "3000:3000"    
 
 volumes:
   dev-db-data:    
