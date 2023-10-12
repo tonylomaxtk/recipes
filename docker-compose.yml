@@ -38,7 +38,10 @@ services:
     container_name: recipes-frontend
     ports:
       - "3000:3000"    
+    volumes:
+      - ./recipes-frontend:/usr/src/app
+
 
 volumes:
-  dev-db-data:    
-        
+  dev-db-data:
+    

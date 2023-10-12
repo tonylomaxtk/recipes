@@ -3,13 +3,19 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
+
+  const getRecipes = async () => {
+    const recipes  = await fetch("http://localhost:8000/api/recipe/recipes/")
+    console.log({recipes});
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
+        <button onClick={getRecipes}>
+          Get Recipes
+        </button>
         <a
           className="App-link"
           href="https://reactjs.org"

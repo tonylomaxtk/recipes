@@ -1,6 +1,6 @@
 FROM node:18-alpine
 
-WORKDIR .
+WORKDIR /usr/src/app
 
 EXPOSE 3000
 
@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 
 RUN npm install
 
-copy . ./
+copy . .
 
 CMD ["npm", "start"]
 
