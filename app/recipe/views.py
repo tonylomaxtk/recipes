@@ -2,7 +2,8 @@
 
 from rest_framework import viewsets
 
-from core.models import Recipe
+from core.models import (Recipe, Ingredient)
+
 from recipe import serializers
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -18,4 +19,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeSerializer
         
         return self.serializer_class
-    
+
+
+# class IngredientViewSet(RecipeViewSet):
+#     """Manage ingredients in the db"""
+#     serializer_class = serializers.IngredientSerializer
+#     queryset = Ingredient.objects.all()    

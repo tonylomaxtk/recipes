@@ -20,3 +20,16 @@ class ModelTests(TestCase):
         )   
 
         self.assertEqual(str(recipe), recipe.name)
+
+    def test_create_ingredient(self):
+        """Test creating an ingredient is successful"""
+
+        recipe = models.Recipe.objects.create(
+            name="Test recipe name",
+            description="A test recipe with ingredients",
+        )   
+
+        ingredient = models.Ingredient.objects.create(
+            name="test ingredient",
+            recipe=recipe
+        )

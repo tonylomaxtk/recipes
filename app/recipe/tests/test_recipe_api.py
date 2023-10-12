@@ -9,7 +9,7 @@ from django.urls import reverse
  
 from rest_framework.test import APIClient
 
-from core.models import Recipe
+from core.models import (Recipe, Ingredient)
 
 from recipe.serializers import (
     RecipeSerializer
@@ -25,7 +25,7 @@ def create_recipe(**params):
 
     defaults = {
         "name": "test recipe",
-        "description": "a random test recipe",
+        "description": "a random test recipe"
     }
 
     defaults.update(params) 
@@ -142,4 +142,33 @@ class RecipeAPITests(TestCase):
         self.assertEqual(res.status_code, 204)
         self.assertFalse(Recipe.objects.filter(id=recipe.id).exists())
 
+    def test_create_ingredient_on_update(self):
+        """Test creating an ingredient when updating a recipe"""        
+        recipe = create_recipe()
+
+        payload={"ingredients": [{"name": "limes"}]}
+        url = detail_url(recipe.id)
+        res = self.client.patch(url, payload, content_type='application/json')
+
+        self.assertEqual(res.status_code, 200 )
+
+            
+        new_ingredient = Ingredient.objects.get(name="limes")
+        print("new_ingredient",new_ingredient )
         
+        self.assertIn(new_ingredient, recipe.ingredients.all())
+
+
+    def test_clear_recipe_ingredients(self):
+        """test clearing a recipes ingredients"""
+        recipe = create_recipe()
+        ingredient = Ingredient.objects.create(name="Garlic", recipe_id=recipe.id)
+        
+        recipe.ingredients.add(ingredient)
+
+        payload = {"ingredients": []}
+        url = detail_url(recipe.id)
+        res= self.client.patch(url, payload,content_type='application/json' )
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(recipe.ingredients.count(), 0)
