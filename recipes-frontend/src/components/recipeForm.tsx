@@ -1,4 +1,3 @@
-import React from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import axios from "axios";
 import { Button, Input, TextField } from "@mui/material";
@@ -10,13 +9,7 @@ type Inputs = {
 };
 
 function RecipeForm() {
-  const {
-    control,
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>({
+  const { control, handleSubmit } = useForm<Inputs>({
     defaultValues: {
       name: "",
       description: "",
@@ -30,10 +23,9 @@ function RecipeForm() {
       return { name: ingredient };
     });
     const submittedRecipe = { ...data, ingredients };
-    console.log({ submittedRecipe });
-    const res = await axios.post(
+    await axios.post(
       "http://localhost:8000/api/recipe/recipes/",
-      submittedRecipe,
+      submittedRecipe
     );
   };
 
@@ -44,7 +36,7 @@ function RecipeForm() {
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <Input {...field} />}
+          render={({ field }) => <Input {...field} required={true} />}
         />
 
         <label style={{ marginRight: "5px" }}>Description</label>
@@ -58,7 +50,9 @@ function RecipeForm() {
         <Controller
           name="ingredients"
           control={control}
-          render={({ field }) => <TextField {...field} multiline rows={3} />}
+          render={({ field }) => (
+            <TextField {...field} multiline rows={3} required={true} />
+          )}
         />
 
         <Button type="submit" variant="contained">
