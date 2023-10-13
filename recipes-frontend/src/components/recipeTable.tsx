@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import {
   DataGrid,
@@ -7,7 +7,6 @@ import {
   GridRowModesModel,
   GridRowModes,
   GridRowEditStopReasons,
-  GridRowModel,
 } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import EditIcon from "@mui/icons-material/Edit";
@@ -21,10 +20,15 @@ import {
   editRecipe,
 } from "./recipeTable.service";
 import axios from "axios";
+import type { Recipe, RecipeModel } from "../types";
 
 export default function RecipeTable() {
-  const [rows, setRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<Recipe[]>([]);
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
+  useEffect(() => {
+    getRecipes();
+  }, []);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
@@ -64,13 +68,7 @@ export default function RecipeTable() {
               icon={<CancelIcon />}
               label="Cancel"
               className="textPrimary"
-              onClick={handleCancelClick(
-                id,
-                rowModesModel,
-                setRowModesModel,
-                rows,
-                setRows
-              )}
+              onClick={handleCancelClick(id, rowModesModel, setRowModesModel)}
               color="inherit"
             />,
           ];
@@ -98,9 +96,9 @@ export default function RecipeTable() {
   const getRecipes = async () => {
     try {
       const res = await axios.get("http://localhost:8000/api/recipe/recipes/");
-      const formattedRows = res.data.map((recipe: any) => {
+      const formattedRows = res.data.map((recipe: RecipeModel) => {
         const joinedIngredients = recipe.ingredients
-          .map((ingredient: any) => {
+          .map((ingredient: { name: string }) => {
             return ingredient.name;
           })
           .join(", ");
@@ -131,13 +129,14 @@ export default function RecipeTable() {
             event.defaultMuiPrevented = true;
           }
         }}
-        processRowUpdate={(newRow: GridRowModel) => {
+        processRowUpdate={(newRow: Recipe) => {
           const updatedRow = { ...newRow };
+          console.log({ updatedRow });
 
           editRecipe(newRow.id, updatedRow);
 
           setRows(
-            rows.map((row: any) => (row.id === newRow.id ? updatedRow : row))
+            rows.map((row: Recipe) => (row.id === newRow.id ? updatedRow : row))
           );
           return updatedRow;
         }}

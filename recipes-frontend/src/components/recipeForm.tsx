@@ -1,15 +1,10 @@
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { Button, Input, TextField } from "@mui/material";
-
-type Inputs = {
-  name: string;
-  description: string;
-  ingredients: any;
-};
+import type { Recipe } from "../types";
 
 function RecipeForm() {
-  const { control, handleSubmit } = useForm<Inputs>({
+  const { control, handleSubmit, reset } = useForm<Recipe>({
     defaultValues: {
       name: "",
       description: "",
@@ -17,16 +12,23 @@ function RecipeForm() {
     },
   });
 
-  const onSubmit: SubmitHandler<Inputs> = async (data: any, e: any) => {
-    e.preventDefault();
-    const ingredients = data.ingredients.split(",").map((ingredient: any) => {
-      return { name: ingredient };
-    });
+  const onSubmit = async (
+    data: Recipe,
+    e: React.BaseSyntheticEvent<object, any, any> | undefined
+  ) => {
+    e?.preventDefault();
+    const ingredients = data.ingredients
+      .split(",")
+      .map((ingredient: string) => {
+        return { name: ingredient };
+      });
+    console.log({ ingredients });
     const submittedRecipe = { ...data, ingredients };
     await axios.post(
       "http://localhost:8000/api/recipe/recipes/",
       submittedRecipe
     );
+    reset();
   };
 
   return (
