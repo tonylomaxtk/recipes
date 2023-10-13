@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
 import {
   DataGrid,
   GridColDef,
@@ -36,23 +35,19 @@ export default function RecipeTable({
     })();
   }, []);
 
-  useEffect(() => {
-    console.log({ rows });
-  }, [rows]);
-
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Name", width: 130, editable: true },
     {
       field: "description",
       headerName: "Description",
-      width: 130,
+      width: 230,
       editable: true,
     },
     {
       field: "ingredients",
       headerName: "Ingredients",
-      width: 130,
+      width: 330,
       editable: true,
     },
     {
@@ -118,35 +113,34 @@ export default function RecipeTable({
   ];
 
   return (
-    <div>
-      <DataGrid
-        rows={rows || []}
-        columns={columns}
-        editMode="row"
-        rowModesModel={rowModesModel}
-        onRowModesModelChange={(newRowModesModel) => {
-          setRowModesModel(newRowModesModel);
-        }}
-        onRowEditStop={(params, event) => {
-          if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-            event.defaultMuiPrevented = true;
-          }
-        }}
-        processRowUpdate={(newRow: Recipe) => {
-          editRecipe(newRow.id, newRow);
+    <DataGrid
+      style={{ marginBottom: "5rem" }}
+      rows={rows || []}
+      columns={columns}
+      editMode="row"
+      rowModesModel={rowModesModel}
+      onRowModesModelChange={(newRowModesModel) => {
+        setRowModesModel(newRowModesModel);
+      }}
+      onRowEditStop={(params, event) => {
+        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+          event.defaultMuiPrevented = true;
+        }
+      }}
+      processRowUpdate={(newRow: Recipe) => {
+        editRecipe(newRow.id, newRow);
 
-          setRows(
-            rows.map((row: Recipe) => (row.id === newRow.id ? newRow : row))
-          );
-          return newRow;
-        }}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-      />
-    </div>
+        setRows(
+          rows.map((row: Recipe) => (row.id === newRow.id ? newRow : row))
+        );
+        return newRow;
+      }}
+      initialState={{
+        pagination: {
+          paginationModel: { page: 0, pageSize: 5 },
+        },
+      }}
+      pageSizeOptions={[5, 10]}
+    />
   );
 }

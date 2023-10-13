@@ -1,9 +1,9 @@
 import { useForm, Controller } from "react-hook-form";
-import axios from "axios";
-import { Button, Input, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import type { Recipe } from "../types";
 import { createRecipe } from "../api/recipes";
 import { retrieveRecipes } from "./recipeTable.service";
+import * as S from "./recipeForm.style";
 
 function RecipeForm({
   setRows,
@@ -35,36 +35,54 @@ function RecipeForm({
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <label style={{ marginRight: "5px" }}>Name</label>
-        <Controller
-          name="name"
-          control={control}
-          render={({ field }) => <Input {...field} required={true} />}
-        />
+    <S.NewRecipeForm onSubmit={handleSubmit(onSubmit)}>
+      <label>Name</label>
+      <Controller
+        name="name"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            required={true}
+            variant="outlined"
+            style={{ marginBottom: "2rem" }}
+          />
+        )}
+      />
 
-        <label style={{ marginRight: "5px" }}>Description</label>
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => <Input {...field} />}
-        />
+      <label>Description</label>
+      <Controller
+        name="description"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            variant="outlined"
+            style={{ marginBottom: "2rem" }}
+          />
+        )}
+      />
 
-        <label>Ingredients (Comma separated)</label>
-        <Controller
-          name="ingredients"
-          control={control}
-          render={({ field }) => (
-            <TextField {...field} multiline rows={3} required={true} />
-          )}
-        />
+      <label>Ingredients (Comma separated)</label>
+      <Controller
+        name="ingredients"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            multiline
+            rows={3}
+            required={true}
+            variant="outlined"
+            style={{ marginBottom: "2rem" }}
+          />
+        )}
+      />
 
-        <Button type="submit" variant="contained">
-          Create Recipe
-        </Button>
-      </form>
-    </div>
+      <S.SubmitRecipeButton type="submit" variant="contained">
+        Create Recipe
+      </S.SubmitRecipeButton>
+    </S.NewRecipeForm>
   );
 }
 
