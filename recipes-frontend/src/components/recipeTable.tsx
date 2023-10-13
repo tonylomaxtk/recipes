@@ -14,21 +14,31 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Close";
 import {
   handleDeleteClick,
-  handleEditClick,
-  handleSaveClick,
+  handleEditToggle,
   handleCancelClick,
   editRecipe,
+  retrieveRecipes,
 } from "./recipeTable.service";
-import axios from "axios";
-import type { Recipe, RecipeModel } from "../types";
+import type { Recipe } from "../types";
 
-export default function RecipeTable() {
-  const [rows, setRows] = useState<Recipe[]>([]);
+export default function RecipeTable({
+  rows,
+  setRows,
+}: {
+  rows: Recipe[];
+  setRows: React.Dispatch<React.SetStateAction<Recipe[]>>;
+}) {
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   useEffect(() => {
-    getRecipes();
+    (async () => {
+      setRows(await retrieveRecipes());
+    })();
   }, []);
+
+  useEffect(() => {
+    console.log({ rows });
+  }, [rows]);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
@@ -62,7 +72,14 @@ export default function RecipeTable() {
               sx={{
                 color: "primary.main",
               }}
-              onClick={handleSaveClick(id, rowModesModel, setRowModesModel)}
+              onClick={() => {
+                handleEditToggle(
+                  id,
+                  rowModesModel,
+                  setRowModesModel,
+                  GridRowModes.View
+                );
+              }}
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
@@ -85,7 +102,14 @@ export default function RecipeTable() {
             icon={<EditIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={handleEditClick(id, rowModesModel, setRowModesModel)}
+            onClick={() =>
+              handleEditToggle(
+                id,
+                rowModesModel,
+                setRowModesModel,
+                GridRowModes.Edit
+              )
+            }
             color="inherit"
           />,
         ];
@@ -93,29 +117,8 @@ export default function RecipeTable() {
     },
   ];
 
-  const getRecipes = async () => {
-    try {
-      const res = await axios.get("http://localhost:8000/api/recipe/recipes/");
-      const formattedRows = res.data.map((recipe: RecipeModel) => {
-        const joinedIngredients = recipe.ingredients
-          .map((ingredient: { name: string }) => {
-            return ingredient.name;
-          })
-          .join(", ");
-        return { ...recipe, ingredients: joinedIngredients };
-      });
-
-      setRows(formattedRows);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <div>
-      <Button onClick={getRecipes} variant="contained">
-        Get Recipes
-      </Button>
       <DataGrid
         rows={rows || []}
         columns={columns}
@@ -130,15 +133,12 @@ export default function RecipeTable() {
           }
         }}
         processRowUpdate={(newRow: Recipe) => {
-          const updatedRow = { ...newRow };
-          console.log({ updatedRow });
-
-          editRecipe(newRow.id, updatedRow);
+          editRecipe(newRow.id, newRow);
 
           setRows(
-            rows.map((row: Recipe) => (row.id === newRow.id ? updatedRow : row))
+            rows.map((row: Recipe) => (row.id === newRow.id ? newRow : row))
           );
-          return updatedRow;
+          return newRow;
         }}
         initialState={{
           pagination: {

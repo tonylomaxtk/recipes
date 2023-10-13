@@ -1,6 +1,6 @@
 import { GridRowId, GridRowModes, GridRowModesModel } from "@mui/x-data-grid";
-import axios from "axios";
-import type { Recipe } from "../types";
+import type { Recipe, RecipeModel } from "../types";
+import { deleteRecipe, updateRecipe, getRecipes } from "../api/recipes";
 
 export const handleDeleteClick =
   (
@@ -9,12 +9,11 @@ export const handleDeleteClick =
     setRows: React.Dispatch<React.SetStateAction<Recipe[]>>
   ) =>
   () => {
-    axios.delete(`http://localhost:8000/api/recipe/recipes/${id}`);
+    deleteRecipe(Number(id));
     setRows(rows.filter((row: Recipe) => row.id !== id));
   };
 
 export const editRecipe = (id: number, updatedRow: Recipe) => {
-  console.log({ updatedRow });
   const updatedRecipeData = {
     ...updatedRow,
     ingredients: updatedRow.ingredients
@@ -25,31 +24,17 @@ export const editRecipe = (id: number, updatedRow: Recipe) => {
       }),
   };
 
-  axios.patch(
-    `http://localhost:8000/api/recipe/recipes/${id}/`,
-    updatedRecipeData
-  );
+  updateRecipe(id, updatedRecipeData);
 };
 
-export const handleEditClick =
-  (
-    id: GridRowId,
-    rowModesModel: GridRowModesModel,
-    setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>
-  ) =>
-  () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-export const handleSaveClick =
-  (
-    id: GridRowId,
-    rowModesModel: GridRowModesModel,
-    setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>
-  ) =>
-  () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
+export const handleEditToggle = (
+  id: GridRowId,
+  rowModesModel: GridRowModesModel,
+  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>,
+  mode: GridRowModes
+) => {
+  setRowModesModel({ ...rowModesModel, [id]: { mode } });
+};
 
 export const handleCancelClick =
   (
@@ -63,3 +48,17 @@ export const handleCancelClick =
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
   };
+
+export const retrieveRecipes = async () => {
+  try {
+    const res = await getRecipes();
+    return res.data.map((recipe: RecipeModel) => {
+      const joinedIngredients = recipe.ingredients
+        .map((ingredient: { name: string }) => ingredient.name)
+        .join(", ");
+      return { ...recipe, ingredients: joinedIngredients };
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};

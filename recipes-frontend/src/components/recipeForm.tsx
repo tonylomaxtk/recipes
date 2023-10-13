@@ -2,8 +2,14 @@ import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import { Button, Input, TextField } from "@mui/material";
 import type { Recipe } from "../types";
+import { createRecipe } from "../api/recipes";
+import { retrieveRecipes } from "./recipeTable.service";
 
-function RecipeForm() {
+function RecipeForm({
+  setRows,
+}: {
+  setRows: React.Dispatch<React.SetStateAction<Recipe[]>>;
+}) {
   const { control, handleSubmit, reset } = useForm<Recipe>({
     defaultValues: {
       name: "",
@@ -22,13 +28,10 @@ function RecipeForm() {
       .map((ingredient: string) => {
         return { name: ingredient };
       });
-    console.log({ ingredients });
     const submittedRecipe = { ...data, ingredients };
-    await axios.post(
-      "http://localhost:8000/api/recipe/recipes/",
-      submittedRecipe
-    );
+    await createRecipe(submittedRecipe);
     reset();
+    setRows(await retrieveRecipes());
   };
 
   return (
