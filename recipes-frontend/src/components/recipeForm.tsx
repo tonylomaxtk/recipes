@@ -1,5 +1,4 @@
 import { useForm, Controller } from "react-hook-form";
-import { Button, TextField } from "@mui/material";
 import type { Recipe } from "../types";
 import { createRecipe } from "../api/recipes";
 import { retrieveRecipes } from "./recipeTable.service";
@@ -22,16 +21,20 @@ function RecipeForm({
     data: Recipe,
     e: React.BaseSyntheticEvent<object, any, any> | undefined
   ) => {
-    e?.preventDefault();
-    const ingredients = data.ingredients
-      .split(",")
-      .map((ingredient: string) => {
-        return { name: ingredient };
-      });
-    const submittedRecipe = { ...data, ingredients };
-    await createRecipe(submittedRecipe);
-    reset();
-    setRows(await retrieveRecipes());
+    try {
+      e?.preventDefault();
+      const formattedIngredients = data.ingredients
+        .split(",")
+        .map((ingredient: string) => {
+          return { name: ingredient };
+        });
+      const submittedRecipe = { ...data, ingredients: formattedIngredients };
+      await createRecipe(submittedRecipe);
+      reset();
+      setRows(await retrieveRecipes());
+    } catch (error) {
+      console.error("error submitting new recipe", error);
+    }
   };
 
   return (
@@ -41,12 +44,7 @@ function RecipeForm({
         name="name"
         control={control}
         render={({ field }) => (
-          <TextField
-            {...field}
-            required={true}
-            variant="outlined"
-            style={{ marginBottom: "2rem" }}
-          />
+          <S.FormInput {...field} required={true} variant="outlined" />
         )}
       />
 
@@ -54,13 +52,7 @@ function RecipeForm({
       <Controller
         name="description"
         control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            variant="outlined"
-            style={{ marginBottom: "2rem" }}
-          />
-        )}
+        render={({ field }) => <S.FormInput {...field} variant="outlined" />}
       />
 
       <label>Ingredients (Comma separated)</label>
@@ -68,13 +60,12 @@ function RecipeForm({
         name="ingredients"
         control={control}
         render={({ field }) => (
-          <TextField
+          <S.FormInput
             {...field}
             multiline
             rows={3}
             required={true}
             variant="outlined"
-            style={{ marginBottom: "2rem" }}
           />
         )}
       />

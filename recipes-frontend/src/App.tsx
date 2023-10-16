@@ -6,7 +6,7 @@ import { Recipe } from "./types";
 function App() {
   const [rows, setRows] = useState<Recipe[]>([]);
   return (
-    <div className="App" style={{ maxWidth: "75%", margin: "0 auto" }}>
+    <div style={{ maxWidth: "75%", margin: "0 auto" }}>
       <h1>Recipes </h1>
       <RecipeTable rows={rows} setRows={setRows} />
       <RecipeForm setRows={setRows} />

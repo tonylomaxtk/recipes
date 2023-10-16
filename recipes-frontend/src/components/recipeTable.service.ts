@@ -14,17 +14,21 @@ export const handleDeleteClick =
   };
 
 export const editRecipe = (id: number, updatedRow: Recipe) => {
-  const updatedRecipeData = {
-    ...updatedRow,
-    ingredients: updatedRow.ingredients
-      .replace(/ /g, "")
-      .split(",")
-      .map((ingredient: string) => {
-        return { name: ingredient };
-      }),
-  };
+  try {
+    const updatedRecipeData = {
+      ...updatedRow,
+      ingredients: updatedRow.ingredients
+        .replace(/ /g, "")
+        .split(",")
+        .map((ingredient: string) => {
+          return { name: ingredient };
+        }),
+    };
 
-  updateRecipe(id, updatedRecipeData);
+    updateRecipe(id, updatedRecipeData);
+  } catch (error) {
+    console.error("error editing recipe", error);
+  }
 };
 
 export const handleEditToggle = (
@@ -59,6 +63,6 @@ export const retrieveRecipes = async () => {
       return { ...recipe, ingredients: joinedIngredients };
     });
   } catch (error) {
-    console.error(error);
+    console.error("error fetching recipes", error);
   }
 };
